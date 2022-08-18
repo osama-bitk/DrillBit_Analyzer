@@ -1,0 +1,10 @@
+BC Broken Cutter
+BF Bond Failure
+CC Chipped Cutter
+GC Green Cutter
+GG Green Gauge
+LC Lost Cutter
+WC Worn Cutter
+RO Ring Out
+CR Cored-Out
+JD Junk Damage

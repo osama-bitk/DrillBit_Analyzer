@@ -2,7 +2,7 @@
 
 ```bash
 # clone repository
-git clone https://github.com/SkalskiP/make-sense.git
+git clone https://github.com/osama-bitk/DrillBit_Analyisis
 
 # navigate to main dir
 cd Drill_Bit_Analyzer

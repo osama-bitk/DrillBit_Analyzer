@@ -15,14 +15,8 @@ export class LabelActions {
 
     public static deleteImageLabelById(imageId: string, labelId: string) {
         switch (LabelsSelector.getActiveLabelType()) {
-            case LabelType.POINT:
-                LabelActions.deletePointLabelById(imageId, labelId);
-                break;
             case LabelType.RECT:
                 LabelActions.deleteRectLabelById(imageId, labelId);
-                break;
-            case LabelType.POLYGON:
-                LabelActions.deletePolygonLabelById(imageId, labelId);
                 break;
         }
     }
@@ -38,51 +32,12 @@ export class LabelActions {
         store.dispatch(updateImageDataById(imageData.id, newImageData));
     }
 
-    public static deletePointLabelById(imageId: string, labelPointId: string) {
-        const imageData: ImageData = LabelsSelector.getImageDataById(imageId);
-        const newImageData = {
-            ...imageData,
-            labelPoints: filter(imageData.labelPoints, (currentLabel: LabelPoint) => {
-                return currentLabel.id !== labelPointId;
-            })
-        };
-        store.dispatch(updateImageDataById(imageData.id, newImageData));
-    }
-
-    public static deleteLineLabelById(imageId: string, labelLineId: string) {
-        const imageData: ImageData = LabelsSelector.getImageDataById(imageId);
-        const newImageData = {
-            ...imageData,
-            labelLines: filter(imageData.labelLines, (currentLabel: LabelLine) => {
-                return currentLabel.id !== labelLineId;
-            })
-        };
-        store.dispatch(updateImageDataById(imageData.id, newImageData));
-    }
-
-    public static deletePolygonLabelById(imageId: string, labelPolygonId: string) {
-        const imageData: ImageData = LabelsSelector.getImageDataById(imageId);
-        const newImageData = {
-            ...imageData,
-            labelPolygons: filter(imageData.labelPolygons, (currentLabel: LabelPolygon) => {
-                return currentLabel.id !== labelPolygonId;
-            })
-        };
-        store.dispatch(updateImageDataById(imageData.id, newImageData));
-    }
-
     public static toggleLabelVisibilityById(imageId: string, labelId: string) {
         const imageData: ImageData = LabelsSelector.getImageDataById(imageId);
         const newImageData = {
             ...imageData,
-            labelPoints: imageData.labelPoints.map((labelPoint: LabelPoint) => {
-                return labelPoint.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelPoint) : labelPoint
-            }),
             labelRects: imageData.labelRects.map((labelRect: LabelRect) => {
                 return labelRect.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelRect) : labelRect
-            }),
-            labelPolygons: imageData.labelPolygons.map((labelPolygon: LabelPolygon) => {
-                return labelPolygon.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelPolygon) : labelPolygon
             }),
             labelLines: imageData.labelLines.map((labelLine: LabelLine) => {
                 return labelLine.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelLine) : labelLine
@@ -120,16 +75,6 @@ export class LabelActions {
                     }
                 } else {
                     return labelPoint
-                }
-            }),
-            labelPolygons: imageData.labelPolygons.map((labelPolygon: LabelPolygon) => {
-                if (labelNamesIds.includes(labelPolygon.id)) {
-                    return {
-                        ...labelPolygon,
-                        id: null
-                    }
-                } else {
-                    return labelPolygon
                 }
             }),
             labelNameIds: imageData.labelNameIds.filter((labelNameId: string) => {

@@ -5,7 +5,6 @@ import { ObjectDetector } from "../../../ai/ObjectDetector";
 import './LoadModelPopup.scss'
 import { ClipLoader } from "react-spinners";
 import { AIModel } from "../../../data/enums/AIModel";
-import { PoseDetector } from "../../../ai/PoseDetector";
 import { findLast } from "lodash";
 import { CSSHelper } from "../../../logic/helpers/CSSHelper";
 
@@ -21,11 +20,6 @@ const models: SelectableModel[] = [
         name: "COCO SSD - object detection using rectangles",
         flag: false
     },
-    {
-        model: AIModel.POSE_DETECTION,
-        name: "POSE-NET - pose estimation using points",
-        flag: false
-    }
 ];
 
 export const LoadModelPopup: React.FC = () => {
@@ -35,11 +29,6 @@ export const LoadModelPopup: React.FC = () => {
     const onAccept = () => {
         setModelIsLoadingStatus(true);
         switch (extractSelectedModel()) {
-            case AIModel.POSE_DETECTION:
-                PoseDetector.loadModel(() => {
-                    PopupActions.close();
-                });
-                break;
             case AIModel.OBJECT_DETECTION:
                 ObjectDetector.loadModel(() => {
                     PopupActions.close();

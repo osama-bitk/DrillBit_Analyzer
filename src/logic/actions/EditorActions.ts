@@ -1,8 +1,6 @@
 import {LabelType} from "../../data/enums/LabelType";
 import {EditorModel} from "../../staticModels/EditorModel";
 import {RectRenderEngine} from "../render/RectRenderEngine";
-import {PointRenderEngine} from "../render/PointRenderEngine";
-import {PolygonRenderEngine} from "../render/PolygonRenderEngine";
 import {IRect} from "../../interfaces/IRect";
 import {RectUtil} from "../../utils/RectUtil";
 import {EditorData} from "../../data/EditorData";
@@ -19,8 +17,6 @@ import {ImageUtil} from "../../utils/ImageUtil";
 import {GeneralSelector} from "../../store/selectors/GeneralSelector";
 import {ViewPortHelper} from "../helpers/ViewPortHelper";
 import {CustomCursorStyle} from "../../data/enums/CustomCursorStyle";
-import {LineRenderEngine} from "../render/LineRenderEngine";
-
 export class EditorActions {
 
     // =================================================================================================================
@@ -31,15 +27,6 @@ export class EditorActions {
         switch (activeLabelType) {
             case LabelType.RECT:
                 EditorModel.supportRenderingEngine = new RectRenderEngine(EditorModel.canvas);
-                break;
-            case LabelType.POINT:
-                EditorModel.supportRenderingEngine = new PointRenderEngine(EditorModel.canvas);
-                break;
-            case LabelType.LINE:
-                EditorModel.supportRenderingEngine = new LineRenderEngine(EditorModel.canvas);
-                break;
-            case LabelType.POLYGON:
-                EditorModel.supportRenderingEngine = new PolygonRenderEngine(EditorModel.canvas);
                 break;
             default:
                 EditorModel.supportRenderingEngine = null;

@@ -6,7 +6,6 @@ import {ProjectType} from './data/enums/ProjectType';
 import {AppState} from './store';
 import {connect} from 'react-redux';
 import PopupView from './views/PopupView/PopupView';
-import MobileMainView from './views/MobileMainView/MobileMainView';
 import {ISize} from './interfaces/ISize';
 import {Settings} from './settings/Settings';
 import {SizeItUpView} from './views/SizeItUpView/SizeItUpView';

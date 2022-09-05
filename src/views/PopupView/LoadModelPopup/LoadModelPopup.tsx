@@ -17,7 +17,7 @@ interface SelectableModel {
 const models: SelectableModel[] = [
     {
         model: AIModel.OBJECT_DETECTION,
-        name: "COCO SSD - object detection using rectangles",
+        name: "Nothing here yet",
         flag: false
     },
 ];
@@ -93,8 +93,7 @@ export const LoadModelPopup: React.FC = () => {
         return <div className="LoadModelPopupContent">
             <div className="Message">
                 To speed up your work, you can use our AI, which will try to mark objects on your images. Don't worry,
-                your photos are still safe. To take care of your privacy, we decided not to send your images to the
-                server, but instead send our AI to you. When accepting, make sure that you have a fast and stable
+                your photos are still safe. When proceeding, make sure that you have a fast and stable
                 connection - it may take a few minutes to load the model.
             </div>
             <div className="Companion">

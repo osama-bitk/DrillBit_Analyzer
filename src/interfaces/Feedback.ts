@@ -1,4 +1,4 @@
-export interface IPoint {
+export interface FEEDBACK {
     x:number,
     y:number
 }

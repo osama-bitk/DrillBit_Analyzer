@@ -1,7 +1,7 @@
 import React from 'react';
 import {ISize} from '../../../../interfaces/ISize';
 import Scrollbars from 'react-custom-scrollbars-2';
-import {ImageData, LabelName, LabelPoint} from '../../../../store/labels/types';
+import {ImageData, LabelName, LabelFeedback} from '../../../../store/labels/types';
 import './FeedBackLabelList.scss';
 import {
     updateActiveLabelId,
@@ -46,28 +46,28 @@ const PointLabelsList: React.FC<IProps> = (
     };
     const listStyleContent: React.CSSProperties = {
         width: size.width,
-        height: imageData.labelPoints.length * labelInputFieldHeight
+        height: imageData.labelFeedbacks.length * labelInputFieldHeight
     };
 
-    const deletePointLabelById = (labelPointId: string) => {
-        LabelActions.deletePointLabelById(imageData.id, labelPointId);
+    const deletePointLabelById = (labelFeedbackId: string) => {
+        LabelActions.deleteFeedbackLabelById(imageData.id, labelFeedbackId);
     };
 
-    const togglePointLabelVisibilityById = (labelPointId: string) => {
-        LabelActions.toggleLabelVisibilityById(imageData.id, labelPointId);
+    const togglePointLabelVisibilityById = (labelFeedbackId: string) => {
+        LabelActions.toggleLabelVisibilityById(imageData.id, labelFeedbackId);
     };
 
-    const updatePointLabel = (labelPointId: string, labelNameId: string) => {
+    const updatePointLabel = (labelFeedbackId: string, labelNameId: string) => {
         const newImageData = {
             ...imageData,
-            labelPoints: imageData.labelPoints.map((labelPoint: LabelPoint) => {
-                if (labelPoint.id === labelPointId) {
+            labelFeedbacks: imageData.labelFeedbacks.map((labelFeedback: LabelFeedback) => {
+                if (labelFeedback.id === labelFeedbackId) {
                     return {
-                        ...labelPoint,
+                        ...labelFeedback,
                         labelId: labelNameId
                     }
                 }
-                return labelPoint
+                return labelFeedback
             })
         };
         updateImageDataByIdAction(imageData.id, newImageData);
@@ -79,21 +79,21 @@ const PointLabelsList: React.FC<IProps> = (
     };
 
     const getChildren = () => {
-        return imageData.labelPoints
-            .filter((labelPoint: LabelPoint) => labelPoint.status === LabelStatus.ACCEPTED)
-            .map((labelPoint: LabelPoint) => {
+        return imageData.labelFeedbacks
+            .filter((labelFeedback: LabelFeedback) => labelFeedback.status === LabelStatus.ACCEPTED)
+            .map((labelFeedback: LabelFeedback) => {
             return <LabelInputField
                 size={{
                     width: size.width,
                     height: labelInputFieldHeight
                 }}
-                isActive={labelPoint.id === activeLabelId}
-                isHighlighted={labelPoint.id === highlightedLabelId}
-                isVisible={labelPoint.isVisible}
-                id={labelPoint.id}
-                key={labelPoint.id}
+                isActive={labelFeedback.id === activeLabelId}
+                isHighlighted={labelFeedback.id === highlightedLabelId}
+                isVisible={labelFeedback.isVisible}
+                id={labelFeedback.id}
+                key={labelFeedback.id}
                 onDelete={deletePointLabelById}
-                value={labelPoint.labelId !== null ? findLast(labelNames, {id: labelPoint.labelId}) : null}
+                value={labelFeedback.labelId !== null ? findLast(labelNames, {id: labelFeedback.labelId}) : null}
                 options={labelNames}
                 onSelectLabel={updatePointLabel}
                 toggleLabelVisibility={togglePointLabelVisibilityById}
@@ -103,11 +103,11 @@ const PointLabelsList: React.FC<IProps> = (
 
     return (
         <div
-            className='PointLabelsList'
+            className='FeedbackLabelsList'
             style={listStyle}
             onClickCapture={onClickHandler}
         >
-            {imageData.labelPoints.filter((labelPoint: LabelPoint) => labelPoint.status === LabelStatus.ACCEPTED).length === 0 ?
+            {imageData.labelFeedbacks.filter((labelFeedback: LabelFeedback) => labelFeedback.status === LabelStatus.ACCEPTED).length === 0 ?
                 <EmptyLabelList
                     labelBefore={'Give your feedback on this image'}
                     labelAfter={'no labels created for this image yet'}

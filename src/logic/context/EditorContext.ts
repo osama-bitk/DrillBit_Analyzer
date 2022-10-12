@@ -3,23 +3,23 @@ import {EditorModel} from "../../staticModels/EditorModel";
 import {LabelType} from "../../data/enums/LabelType";
 import {EditorData} from "../../data/EditorData";
 import {EditorActions} from "../actions/EditorActions";
-import {PolygonRenderEngine} from "../render/PolygonRenderEngine";
+import {FeedbackRenderEngine} from "../render/FeedbackRenderEngine";
 import {BaseContext} from "./BaseContext";
 import {ImageActions} from "../actions/ImageActions";
 import {ViewPortActions} from "../actions/ViewPortActions";
 import {Direction} from "../../data/enums/Direction";
 import {PlatformUtil} from "../../utils/PlatformUtil";
 import {LabelActions} from "../actions/LabelActions";
-import {LineRenderEngine} from "../render/LineRenderEngine";
+import {RectRenderEngine} from "../render/RectRenderEngine";
 
 export class EditorContext extends BaseContext {
     public static actions: HotKeyAction[] = [
         {
             keyCombo: ["Enter"],
             action: (event: KeyboardEvent) => {
-                if (EditorModel.supportRenderingEngine && EditorModel.supportRenderingEngine.labelType === LabelType.POLYGON) {
+                if (EditorModel.supportRenderingEngine && EditorModel.supportRenderingEngine.labelType === LabelType.RECT) {
                     const editorData: EditorData = EditorActions.getEditorData();
-                    (EditorModel.supportRenderingEngine as PolygonRenderEngine).addLabelAndFinishCreation(editorData);
+                    //(EditorModel.supportRenderingEngine as RectRenderEngine).addLabelAndFinishCreation(editorData);
                 }
                 EditorActions.fullRender();
             }
@@ -29,11 +29,11 @@ export class EditorContext extends BaseContext {
             action: (event: KeyboardEvent) => {
                 if (EditorModel.supportRenderingEngine) {
                     switch (EditorModel.supportRenderingEngine.labelType) {
-                        case LabelType.POLYGON:
-                            (EditorModel.supportRenderingEngine as PolygonRenderEngine).cancelLabelCreation();
+                        case LabelType.FEEDBACK:
+                            //(EditorModel.supportRenderingEngine as FeedbackRenderEngine).cancelLabelCreation();
                             break;
-                        case LabelType.LINE:
-                            (EditorModel.supportRenderingEngine as LineRenderEngine).cancelLabelCreation();
+                        case LabelType.RECT:
+                            //(EditorModel.supportRenderingEngine as RectRenderEngine).cancelLabelCreation();
                             break;
                     }
                 }

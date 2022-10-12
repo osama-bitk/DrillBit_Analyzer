@@ -5,8 +5,8 @@ import {ISize} from '../../interfaces/ISize';
 import {IRect} from '../../interfaces/IRect';
 import {ImageUtil} from '../../utils/ImageUtil';
 import {RectUtil} from '../../utils/RectUtil';
-import {IPoint} from '../../interfaces/IPoint';
-import {PointUtil} from '../../utils/PointUtil';
+import {FEEDBACK} from '../../interfaces/Feedback';
+import {FeedbackUtil} from '../../utils/FeedbackUtil';
 import {SizeUtil} from '../../utils/SizeUtil';
 import {EditorActions} from './EditorActions';
 import {Direction} from '../../data/enums/Direction';
@@ -27,14 +27,14 @@ export class ViewPortActions {
 
     public static updateDefaultViewPortImageRect() {
         if (!!EditorModel.viewPortSize && !!EditorModel.image) {
-            const minMargin: IPoint = {
+            const minMargin: FEEDBACK = {
                 x: ViewPointSettings.CANVAS_MIN_MARGIN_PX,
                 y: ViewPointSettings.CANVAS_MIN_MARGIN_PX
             };
             const realImageRect: IRect = {x: 0, y: 0, ...ImageUtil.getSize(EditorModel.image)};
             const viewPortWithMarginRect: IRect = {x: 0, y: 0, ...EditorModel.viewPortSize};
             const viewPortWithoutMarginRect: IRect = RectUtil
-                .expand(viewPortWithMarginRect, PointUtil.multiply(minMargin, -1));
+                .expand(viewPortWithMarginRect, FeedbackUtil.multiply(minMargin, -1));
             EditorModel.defaultRenderImageRect = RectUtil
                 .fitInsideRectWithRatio(viewPortWithoutMarginRect, RectUtil.getRatio(realImageRect));
         }
@@ -82,7 +82,7 @@ export class ViewPortActions {
         }
     }
 
-    public static calculateAbsoluteScrollPosition(relativePosition: IPoint): IPoint {
+    public static calculateAbsoluteScrollPosition(relativePosition: FEEDBACK): FEEDBACK {
         const viewPortContentSize = ViewPortActions.calculateViewPortContentSize();
         const viewPortSize = EditorModel.viewPortSize;
         return {
@@ -91,7 +91,7 @@ export class ViewPortActions {
         };
     }
 
-    public static getRelativeScrollPosition(): IPoint {
+    public static getRelativeScrollPosition(): FEEDBACK {
         if (!!EditorModel.viewPortScrollbars) {
             const values = EditorModel.viewPortScrollbars.getValues();
             return {
@@ -103,7 +103,7 @@ export class ViewPortActions {
         }
     }
 
-    public static getAbsoluteScrollPosition(): IPoint {
+    public static getAbsoluteScrollPosition(): FEEDBACK {
         if (!!EditorModel.viewPortScrollbars) {
             const values = EditorModel.viewPortScrollbars.getValues();
             return {
@@ -115,7 +115,7 @@ export class ViewPortActions {
         }
     }
 
-    public static setScrollPosition(position: IPoint) {
+    public static setScrollPosition(position: FEEDBACK) {
         EditorModel.viewPortScrollbars.scrollLeft(position.x);
         EditorModel.viewPortScrollbars.scrollTop(position.y);
     }
@@ -123,12 +123,12 @@ export class ViewPortActions {
     public static translateViewPortPosition(direction: Direction) {
         if (EditorModel.viewPortActionsDisabled || GeneralSelector.getZoom() === ViewPointSettings.MIN_ZOOM) return;
 
-        const directionVector: IPoint = DirectionUtil.convertDirectionToVector(direction);
-        const translationVector: IPoint = PointUtil.multiply(directionVector, ViewPointSettings.TRANSLATION_STEP_PX);
+        const directionVector: FEEDBACK = DirectionUtil.convertDirectionToVector(direction);
+        const translationVector: FEEDBACK = FeedbackUtil.multiply(directionVector, ViewPointSettings.TRANSLATION_STEP_PX);
         const currentScrollPosition = ViewPortActions.getAbsoluteScrollPosition();
-        const nextScrollPosition = PointUtil.add(currentScrollPosition, translationVector);
+        const nextScrollPosition = FeedbackUtil.add(currentScrollPosition, translationVector);
         ViewPortActions.setScrollPosition(nextScrollPosition);
-        EditorModel.mousePositionOnViewPortContent = PointUtil
+        EditorModel.mousePositionOnViewPortContent = FeedbackUtil
             .add(EditorModel.mousePositionOnViewPortContent, translationVector);
         EditorActions.fullRender();
     }
@@ -137,7 +137,7 @@ export class ViewPortActions {
         if (EditorModel.viewPortActionsDisabled) return;
 
         const currentZoom: number = GeneralSelector.getZoom();
-        const currentRelativeScrollPosition: IPoint = ViewPortActions.getRelativeScrollPosition();
+        const currentRelativeScrollPosition: FEEDBACK = ViewPortActions.getRelativeScrollPosition();
         const nextRelativeScrollPosition = currentZoom === 1 ? {x: 0.5, y: 0.5} : currentRelativeScrollPosition;
         ViewPortActions.setZoom(currentZoom + ViewPointSettings.ZOOM_STEP);
         ViewPortActions.resizeViewPortContent();
@@ -149,7 +149,7 @@ export class ViewPortActions {
         if (EditorModel.viewPortActionsDisabled) return;
 
         const currentZoom: number = GeneralSelector.getZoom();
-        const currentRelativeScrollPosition: IPoint = ViewPortActions.getRelativeScrollPosition();
+        const currentRelativeScrollPosition: FEEDBACK = ViewPortActions.getRelativeScrollPosition();
         ViewPortActions.setZoom(currentZoom - ViewPointSettings.ZOOM_STEP);
         ViewPortActions.resizeViewPortContent();
         ViewPortActions.setScrollPosition(ViewPortActions
@@ -158,7 +158,7 @@ export class ViewPortActions {
     }
 
     public static setDefaultZoom() {
-        const currentRelativeScrollPosition: IPoint = ViewPortActions.getRelativeScrollPosition();
+        const currentRelativeScrollPosition: FEEDBACK = ViewPortActions.getRelativeScrollPosition();
         ViewPortActions.setZoom(ViewPointSettings.MIN_ZOOM);
         ViewPortActions.resizeViewPortContent();
         ViewPortActions.setScrollPosition(ViewPortActions
@@ -168,7 +168,7 @@ export class ViewPortActions {
 
     public static setOneForOneZoom() {
         const currentZoom: number = GeneralSelector.getZoom();
-        const currentRelativeScrollPosition: IPoint = ViewPortActions.getRelativeScrollPosition();
+        const currentRelativeScrollPosition: FEEDBACK = ViewPortActions.getRelativeScrollPosition();
         const nextRelativeScrollPosition = currentZoom === 1 ? {x: 0.5, y: 0.5} : currentRelativeScrollPosition;
         const nextZoom: number = EditorModel.image.width / EditorModel.defaultRenderImageRect.width
         ViewPortActions.setZoom(nextZoom);

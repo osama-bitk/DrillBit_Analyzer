@@ -1,5 +1,5 @@
 import {IRect} from '../interfaces/IRect';
-import {IPoint} from '../interfaces/IPoint';
+import {FEEDBACK} from '../interfaces/Feedback';
 import {ISize} from '../interfaces/ISize';
 import {RectAnchor} from '../data/RectAnchor';
 import {NumberUtil} from './NumberUtil';
@@ -22,7 +22,7 @@ export class RectUtil {
         );
     }
 
-    public static isPointInside(rect: IRect, point: IPoint): boolean {
+    public static isFeedbackInside(rect: IRect, point: FEEDBACK): boolean {
         if (!rect || !point) return null;
         return (
             rect.x <= point.x &&
@@ -32,7 +32,7 @@ export class RectUtil {
         )
     }
 
-    public static getRectWithCenterAndSize(centerPoint: IPoint, size: ISize): IRect {
+    public static getRectWithCenterAndSize(centerPoint: FEEDBACK, size: ISize): IRect {
         return {
             x: centerPoint.x - 0.5 * size.width,
             y: centerPoint.y - 0.5 * size.height,
@@ -114,7 +114,7 @@ export class RectUtil {
         return rect;
     }
 
-    public static translate(rect: IRect, delta: IPoint): IRect {
+    public static translate(rect: IRect, delta: FEEDBACK): IRect {
         return {
             ...rect,
             x: rect.x + delta.x,
@@ -122,7 +122,7 @@ export class RectUtil {
         }
     }
 
-    public static expand(rect: IRect, delta: IPoint): IRect {
+    public static expand(rect: IRect, delta: FEEDBACK): IRect {
         return {
             x: rect.x - delta.x,
             y: rect.y - delta.y,
@@ -153,8 +153,8 @@ export class RectUtil {
         ]
     }
 
-    public static snapPointToRect(point: IPoint, rect: IRect): IPoint {
-        if (RectUtil.isPointInside(rect, point))
+    public static snapFeedbackToRect(point: FEEDBACK, rect: IRect): FEEDBACK {
+        if (RectUtil.isFeedbackInside(rect, point))
             return point;
 
         return {
@@ -163,7 +163,7 @@ export class RectUtil {
         }
     }
 
-    public static getCenter(rect: IRect): IPoint {
+    public static getCenter(rect: IRect): FEEDBACK {
         return {
             x: rect.x + rect.width / 2,
             y: rect.y + rect.height / 2
@@ -177,7 +177,7 @@ export class RectUtil {
         }
     }
 
-    public static getVertices(rect: IRect): IPoint[] {
+    public static getVertices(rect: IRect): FEEDBACK[] {
         return [
             { x: rect.x, y: rect.y },
             { x: rect.x + rect.width, y: rect.y },

@@ -1,4 +1,4 @@
-import {IPoint} from '../../interfaces/IPoint';
+import {FEEDBACK} from '../../interfaces/Feedback';
 import {IRect} from '../../interfaces/IRect';
 import {RectUtil} from '../../utils/RectUtil';
 import {DrawUtil} from '../../utils/DrawUtil';
@@ -10,7 +10,7 @@ import {
     updateHighlightedLabelId,
     updateImageDataById
 } from '../../store/labels/actionCreators';
-import {PointUtil} from '../../utils/PointUtil';
+import {FeedbackUtil} from '../../utils/FeedbackUtil';
 import {RectAnchor} from '../../data/RectAnchor';
 import {RenderEngineSettings} from '../../settings/RenderEngineSettings';
 import {updateCustomCursorStyle} from '../../store/general/actionCreators';
@@ -31,7 +31,7 @@ export class RectRenderEngine extends BaseRenderEngine {
     // STATE
     // =================================================================================================================
 
-    private startCreateRectPoint: IPoint;
+    private startCreateRectPoint: FEEDBACK;
     private startResizeRectAnchor: RectAnchor;
 
     public constructor(canvas: HTMLCanvasElement) {
@@ -69,10 +69,10 @@ export class RectRenderEngine extends BaseRenderEngine {
 
     public mouseUpHandler = (data: EditorData) => {
         if (!!data.viewPortContentImageRect) {
-            const mousePositionSnapped: IPoint = RectUtil.snapPointToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
+            const mousePositionSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
             const activeLabelRect: LabelRect = LabelsSelector.getActiveRectLabel();
 
-            if (!!this.startCreateRectPoint && !PointUtil.equals(this.startCreateRectPoint, mousePositionSnapped)) {
+            if (!!this.startCreateRectPoint && !FeedbackUtil.equals(this.startCreateRectPoint, mousePositionSnapped)) {
 
                 const minX: number = Math.min(this.startCreateRectPoint.x, mousePositionSnapped.x);
                 const minY: number = Math.min(this.startCreateRectPoint.y, mousePositionSnapped.y);
@@ -85,9 +85,9 @@ export class RectRenderEngine extends BaseRenderEngine {
 
             if (!!this.startResizeRectAnchor && !!activeLabelRect) {
                 const rect: IRect = this.calculateRectRelativeToActiveImage(activeLabelRect.rect, data);
-                const startAnchorPosition: IPoint = PointUtil.add(this.startResizeRectAnchor.position,
+                const startAnchorPosition: FEEDBACK = FeedbackUtil.add(this.startResizeRectAnchor.position,
                     data.viewPortContentImageRect);
-                const delta: IPoint = PointUtil.subtract(mousePositionSnapped, startAnchorPosition);
+                const delta: FEEDBACK = FeedbackUtil.subtract(mousePositionSnapped, startAnchorPosition);
                 const resizeRect: IRect = RectUtil.resizeRect(rect, this.startResizeRectAnchor.type, delta);
                 const scale: number = RenderEngineUtil.calculateImageScale(data);
                 const scaledRect: IRect = RectUtil.scaleRect(resizeRect, scale);
@@ -148,9 +148,9 @@ export class RectRenderEngine extends BaseRenderEngine {
         }
     }
 
-    private drawCurrentlyCreatedRect(mousePosition: IPoint, imageRect: IRect) {
+    private drawCurrentlyCreatedRect(mousePosition: FEEDBACK, imageRect: IRect) {
         if (!!this.startCreateRectPoint) {
-            const mousePositionSnapped: IPoint = RectUtil.snapPointToRect(mousePosition, imageRect);
+            const mousePositionSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(mousePosition, imageRect);
             const activeRect: IRect = {
                 x: this.startCreateRectPoint.x,
                 y: this.startCreateRectPoint.y,
@@ -175,9 +175,9 @@ export class RectRenderEngine extends BaseRenderEngine {
     private drawActiveRect(labelRect: LabelRect, data: EditorData) {
         let rect: IRect = this.calculateRectRelativeToActiveImage(labelRect.rect, data);
         if (!!this.startResizeRectAnchor) {
-            const startAnchorPosition: IPoint = PointUtil.add(this.startResizeRectAnchor.position, data.viewPortContentImageRect);
-            const endAnchorPositionSnapped: IPoint = RectUtil.snapPointToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
-            const delta = PointUtil.subtract(endAnchorPositionSnapped, startAnchorPosition);
+            const startAnchorPosition: FEEDBACK = FeedbackUtil.add(this.startResizeRectAnchor.position, data.viewPortContentImageRect);
+            const endAnchorPositionSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
+            const delta = FeedbackUtil.subtract(endAnchorPositionSnapped, startAnchorPosition);
             rect = RectUtil.resizeRect(rect, this.startResizeRectAnchor.type, delta);
         }
         const rectOnImage: IRect = RectUtil.translate(rect, data.viewPortContentImageRect);
@@ -191,8 +191,8 @@ export class RectRenderEngine extends BaseRenderEngine {
         DrawUtil.drawRectWithFill(this.canvas, rectBetweenPixels, DrawUtil.hexToRGB(lineColor, 0.2));
         DrawUtil.drawRect(this.canvas, rectBetweenPixels, lineColor, RenderEngineSettings.LINE_THICKNESS);
         if (isActive) {
-            const handleCenters: IPoint[] = RectUtil.mapRectToAnchors(rectOnImage).map((rectAnchor: RectAnchor) => rectAnchor.position);
-            handleCenters.forEach((center: IPoint) => {
+            const handleCenters: FEEDBACK[] = RectUtil.mapRectToAnchors(rectOnImage).map((rectAnchor: RectAnchor) => rectAnchor.position);
+            handleCenters.forEach((center: FEEDBACK) => {
                 const handleRect: IRect = RectUtil.getRectWithCenterAndSize(center, RenderEngineSettings.anchorSize);
                 const handleRectBetweenPixels: IRect = RenderEngineUtil.setRectBetweenPixels(handleRect);
                 DrawUtil.drawRectWithFill(this.canvas, handleRectBetweenPixels, anchorColor);
@@ -262,27 +262,27 @@ export class RectRenderEngine extends BaseRenderEngine {
         const rectOnImage: IRect = RectUtil.translate(
             this.calculateRectRelativeToActiveImage(rect, data), data.viewPortContentImageRect);
 
-        const outerRectDelta: IPoint = {
+        const outerRectDelta: FEEDBACK = {
             x: RenderEngineSettings.anchorHoverSize.width / 2,
             y: RenderEngineSettings.anchorHoverSize.height / 2
         };
         const outerRect: IRect = RectUtil.expand(rectOnImage, outerRectDelta);
 
-        const innerRectDelta: IPoint = {
+        const innerRectDelta: FEEDBACK = {
             x: - RenderEngineSettings.anchorHoverSize.width / 2,
             y: - RenderEngineSettings.anchorHoverSize.height / 2
         };
         const innerRect: IRect = RectUtil.expand(rectOnImage, innerRectDelta);
 
-        return (RectUtil.isPointInside(outerRect, data.mousePositionOnViewPortContent) &&
-            !RectUtil.isPointInside(innerRect, data.mousePositionOnViewPortContent));
+        return (RectUtil.isFeedbackInside(outerRect, data.mousePositionOnViewPortContent) &&
+            !RectUtil.isFeedbackInside(innerRect, data.mousePositionOnViewPortContent));
     }
 
-    private getAnchorUnderMouseByRect(rect: IRect, mousePosition: IPoint, imageRect: IRect): RectAnchor {
+    private getAnchorUnderMouseByRect(rect: IRect, mousePosition: FEEDBACK, imageRect: IRect): RectAnchor {
         const rectAnchors: RectAnchor[] = RectUtil.mapRectToAnchors(rect);
         for (let i = 0; i < rectAnchors.length; i++) {
             const anchorRect: IRect = RectUtil.translate(RectUtil.getRectWithCenterAndSize(rectAnchors[i].position, RenderEngineSettings.anchorHoverSize), imageRect);
-            if (!!mousePosition && RectUtil.isPointInside(anchorRect, mousePosition)) {
+            if (!!mousePosition && RectUtil.isFeedbackInside(anchorRect, mousePosition)) {
                 return rectAnchors[i];
             }
         }
@@ -299,7 +299,7 @@ export class RectRenderEngine extends BaseRenderEngine {
         return null;
     }
 
-    private startRectCreation(mousePosition: IPoint) {
+    private startRectCreation(mousePosition: FEEDBACK) {
         this.startCreateRectPoint = mousePosition;
         store.dispatch(updateActiveLabelId(null));
         EditorActions.setViewPortActionsDisabledStatus(true);

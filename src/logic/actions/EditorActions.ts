@@ -6,11 +6,11 @@ import {RectUtil} from "../../utils/RectUtil";
 import {EditorData} from "../../data/EditorData";
 import {CanvasUtil} from "../../utils/CanvasUtil";
 import React from "react";
-import {IPoint} from "../../interfaces/IPoint";
+import {FEEDBACK} from "../../interfaces/Feedback";
 import {DrawUtil} from "../../utils/DrawUtil";
 import {PrimaryEditorRenderEngine} from "../render/PrimaryEditorRenderEngine";
 import {ContextManager} from "../context/ContextManager";
-import {PointUtil} from "../../utils/PointUtil";
+import {FeedbackUtil} from "../../utils/FeedbackUtil";
 import {ViewPortActions} from "./ViewPortActions";
 import {ISize} from "../../interfaces/ISize";
 import {ImageUtil} from "../../utils/ImageUtil";
@@ -99,12 +99,12 @@ export class EditorActions {
             return;
         }
 
-        const mousePositionOverViewPortContent: IPoint = CanvasUtil.getMousePositionOnCanvasFromEvent(event, EditorModel.canvas);
-        const viewPortContentScrollPosition: IPoint = ViewPortActions.getAbsoluteScrollPosition();
+        const mousePositionOverViewPortContent: FEEDBACK = CanvasUtil.getMousePositionOnCanvasFromEvent(event, EditorModel.canvas);
+        const viewPortContentScrollPosition: FEEDBACK = ViewPortActions.getAbsoluteScrollPosition();
         const viewPortContentImageRect: IRect = ViewPortActions.calculateViewPortContentImageRect();
-        const mousePositionOverViewPort: IPoint = PointUtil.subtract(mousePositionOverViewPortContent, viewPortContentScrollPosition);
-        const isMouseOverImage: boolean = RectUtil.isPointInside(viewPortContentImageRect, mousePositionOverViewPortContent);
-        const isMouseOverViewPort: boolean = RectUtil.isPointInside({x: 0, y: 0, ...EditorModel.viewPortSize}, mousePositionOverViewPort);
+        const mousePositionOverViewPort: FEEDBACK = FeedbackUtil.subtract(mousePositionOverViewPortContent, viewPortContentScrollPosition);
+        const isMouseOverImage: boolean = RectUtil.isFeedbackInside(viewPortContentImageRect, mousePositionOverViewPortContent);
+        const isMouseOverViewPort: boolean = RectUtil.isFeedbackInside({x: 0, y: 0, ...EditorModel.viewPortSize}, mousePositionOverViewPort);
 
         if (isMouseOverViewPort && !GeneralSelector.getPreventCustomCursorStatus()) {
             EditorModel.cursor.style.left = mousePositionOverViewPort.x + "px";
@@ -114,8 +114,8 @@ export class EditorActions {
             if (isMouseOverImage && ![CustomCursorStyle.GRAB, CustomCursorStyle.GRABBING].includes(GeneralSelector.getCustomCursorStyle())) {
                 const imageSize: ISize = ImageUtil.getSize(EditorModel.image);
                 const scale: number = imageSize.width / viewPortContentImageRect.width;
-                const mousePositionOverImage: IPoint = PointUtil.multiply(
-                    PointUtil.subtract(mousePositionOverViewPortContent, viewPortContentImageRect), scale);
+                const mousePositionOverImage: FEEDBACK = FeedbackUtil.multiply(
+                    FeedbackUtil.subtract(mousePositionOverViewPortContent, viewPortContentImageRect), scale);
                 const text: string = "x: " + Math.round(mousePositionOverImage.x) + ", y: " + Math.round(mousePositionOverImage.y);
 
                 EditorModel.mousePositionIndicator.innerHTML = text;

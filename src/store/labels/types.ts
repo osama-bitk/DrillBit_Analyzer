@@ -1,9 +1,8 @@
 import {IRect} from '../../interfaces/IRect';
 import {Action} from '../Actions';
 import {LabelType} from '../../data/enums/LabelType';
-import {IPoint} from '../../interfaces/IPoint';
+import {FEEDBACK} from '../../interfaces/Feedback';
 import {LabelStatus} from '../../data/enums/LabelStatus';
-import {ILine} from '../../interfaces/ILine';
 
 export type Annotation = {
     id: string;
@@ -18,19 +17,11 @@ export type LabelRect = Annotation & {
     suggestedLabel: string;
 }
 
-export type LabelPoint = Annotation & {
-    point: IPoint;
+export type LabelFeedback = Annotation & {
+    point: FEEDBACK;
     isCreatedByAI: boolean;
     status: LabelStatus;
     suggestedLabel: string;
-}
-
-export type LabelPolygon = Annotation & {
-    vertices: IPoint[];
-}
-
-export type LabelLine = Annotation & {
-    line: ILine;
 }
 
 export type LabelName = {
@@ -44,9 +35,7 @@ export type ImageData = {
     fileData: File;
     loadStatus: boolean;
     labelRects: LabelRect[];
-    labelPoints: LabelPoint[];
-    labelLines: LabelLine[];
-    labelPolygons: LabelPolygon[];
+    labelFeedbacks: LabelFeedback[];
     labelNameIds: string[];
 
     // SSD

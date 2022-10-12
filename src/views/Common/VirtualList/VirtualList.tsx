@@ -3,7 +3,7 @@ import {ISize} from "../../../interfaces/ISize";
 import {IRect} from "../../../interfaces/IRect";
 import Scrollbars from 'react-custom-scrollbars-2';
 import {VirtualListUtil} from "../../../utils/VirtualListUtil";
-import {IPoint} from "../../../interfaces/IPoint";
+import {FEEDBACK} from "../../../interfaces/Feedback";
 import {RectUtil} from "../../../utils/RectUtil";
 
 interface IProps {
@@ -22,7 +22,7 @@ interface IState {
 export class VirtualList extends React.Component<IProps, IState> {
     private gridSize: ISize;
     private contentSize: ISize;
-    private childAnchors: IPoint[];
+    private childAnchors: FEEDBACK[];
     private scrollbars: Scrollbars;
 
     constructor(props) {
@@ -114,7 +114,7 @@ export class VirtualList extends React.Component<IProps, IState> {
             height: viewportRect.height + 2 * overScan
         };
 
-        return this.childAnchors.reduce((children, anchor: IPoint, index: number) => {
+        return this.childAnchors.reduce((children, anchor: FEEDBACK, index: number) => {
             const childRect = Object.assign(anchor, childSize);
             const isVisible = RectUtil.intersect(viewportRectWithOverScan, childRect);
 

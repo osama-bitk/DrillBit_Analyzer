@@ -1,6 +1,6 @@
 import {RectUtil} from '../RectUtil';
 import {IRect} from '../../interfaces/IRect';
-import {IPoint} from '../../interfaces/IPoint';
+import {IPoint} from '../../interfaces/Feedback';
 import {ISize} from '../../interfaces/ISize';
 
 describe('RectUtil getRatio method', () => {

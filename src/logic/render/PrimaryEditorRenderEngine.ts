@@ -6,7 +6,7 @@ import {ViewPortActions} from '../actions/ViewPortActions';
 import {DrawUtil} from '../../utils/DrawUtil';
 import {RenderEngineUtil} from '../../utils/RenderEngineUtil';
 import {RenderEngineSettings} from '../../settings/RenderEngineSettings';
-import {IPoint} from '../../interfaces/IPoint';
+import {FEEDBACK} from '../../interfaces/Feedback';
 import {GeneralSelector} from '../../store/selectors/GeneralSelector';
 import {ProjectType} from '../../data/enums/ProjectType';
 import {PopupWindowType} from '../../data/enums/PopupWindowType';
@@ -37,8 +37,8 @@ export class PrimaryEditorRenderEngine extends BaseRenderEngine {
     public renderCrossHair(data: EditorData): void {
         if (!this.shouldRenderCrossHair(data)) return;
 
-        const mouse = RenderEngineUtil.setPointBetweenPixels(data.mousePositionOnViewPortContent);
-        const drawLine = (startPoint: IPoint, endPoint: IPoint) => {
+        const mouse = RenderEngineUtil.setFeedbackBetweenPixels(data.mousePositionOnViewPortContent);
+        const drawLine = (startPoint: FEEDBACK, endPoint: FEEDBACK) => {
             DrawUtil.drawLine(this.canvas, startPoint, endPoint, RenderEngineSettings.CROSS_HAIR_LINE_COLOR, 2)
         }
         drawLine(

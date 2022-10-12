@@ -1,5 +1,5 @@
 import {LabelsSelector} from '../../store/selectors/LabelsSelector';
-import {ImageData, LabelLine, LabelName, LabelPoint, LabelPolygon, LabelRect} from '../../store/labels/types';
+import {ImageData, LabelName, LabelFeedback, LabelRect} from '../../store/labels/types';
 import {filter} from 'lodash';
 import {store} from '../../index';
 import {updateImageData, updateImageDataById} from '../../store/labels/actionCreators';
@@ -18,6 +18,9 @@ export class LabelActions {
             case LabelType.RECT:
                 LabelActions.deleteRectLabelById(imageId, labelId);
                 break;
+            case LabelType.FEEDBACK:
+                LabelActions.deleteFeedbackLabelById(imageId, labelId);
+                break;
         }
     }
 
@@ -31,6 +34,17 @@ export class LabelActions {
         };
         store.dispatch(updateImageDataById(imageData.id, newImageData));
     }
+    
+    public static deleteFeedbackLabelById(imageId: string, labelPointId: string) {
+        const imageData: ImageData = LabelsSelector.getImageDataById(imageId);
+        const newImageData = {
+            ...imageData,
+            labelPoints: filter(imageData.labelFeedbacks, (currentLabel: LabelFeedback) => {
+                return currentLabel.id !== labelPointId;
+            })
+        };
+        store.dispatch(updateImageDataById(imageData.id, newImageData));
+    }
 
     public static toggleLabelVisibilityById(imageId: string, labelId: string) {
         const imageData: ImageData = LabelsSelector.getImageDataById(imageId);
@@ -39,8 +53,8 @@ export class LabelActions {
             labelRects: imageData.labelRects.map((labelRect: LabelRect) => {
                 return labelRect.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelRect) : labelRect
             }),
-            labelLines: imageData.labelLines.map((labelLine: LabelLine) => {
-                return labelLine.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelLine) : labelLine
+            labelFeedback: imageData.labelFeedbacks.map((labelFeedback: LabelFeedback) => {
+                return labelFeedback.id === labelId ? LabelUtil.toggleAnnotationVisibility(labelFeedback) : labelFeedback
             }),
         };
         store.dispatch(updateImageDataById(imageData.id, newImageData));
@@ -67,14 +81,14 @@ export class LabelActions {
                     return labelRect
                 }
             }),
-            labelPoints: imageData.labelPoints.map((labelPoint: LabelPoint) => {
-                if (labelNamesIds.includes(labelPoint.id)) {
+            labelFeedbacks: imageData.labelFeedbacks.map((labelFeedback: LabelFeedback) => {
+                if (labelNamesIds.includes(labelFeedback.id)) {
                     return {
-                        ...labelPoint,
+                        ...labelFeedback,
                         id: null
                     }
                 } else {
-                    return labelPoint
+                    return labelFeedback
                 }
             }),
             labelNameIds: imageData.labelNameIds.filter((labelNameId: string) => {

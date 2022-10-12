@@ -1,9 +1,9 @@
 import {IRect} from '../../interfaces/IRect';
 import {RenderEngineSettings} from '../../settings/RenderEngineSettings';
-import {IPoint} from '../../interfaces/IPoint';
+import {FEEDBACK} from '../../interfaces/Feedback';
 import {CanvasUtil} from '../../utils/CanvasUtil';
 import {store} from '../../index';
-import {ImageData, LabelPoint} from '../../store/labels/types';
+import {ImageData, LabelFeedback} from '../../store/labels/types';
 import {
     updateActiveLabelId,
     updateFirstLabelCreatedFlag,
@@ -26,7 +26,7 @@ import {LabelStatus} from '../../data/enums/LabelStatus';
 import {Settings} from '../../settings/Settings';
 import {LabelUtil} from '../../utils/LabelUtil';
 
-export class PointRenderEngine extends BaseRenderEngine {
+export class FeedbackRenderEngine extends BaseRenderEngine {
 
     // =================================================================================================================
     // STATE
@@ -34,7 +34,7 @@ export class PointRenderEngine extends BaseRenderEngine {
 
     public constructor(canvas: HTMLCanvasElement) {
         super(canvas);
-        this.labelType = LabelType.POINT;
+        this.labelType = LabelType.FEEDBACK;
     }
 
     // =================================================================================================================
@@ -46,42 +46,42 @@ export class PointRenderEngine extends BaseRenderEngine {
         const isMouseOverCanvas: boolean = RenderEngineUtil.isMouseOverCanvas(data);
 
         if (isMouseOverCanvas) {
-            const labelPoint: LabelPoint = this.getLabelPointUnderMouse(data.mousePositionOnViewPortContent, data);
-            if (!!labelPoint) {
-                const pointOnCanvas: IPoint = RenderEngineUtil.transferPointFromImageToViewPortContent(labelPoint.point, data);
-                const pointBetweenPixels = RenderEngineUtil.setPointBetweenPixels(pointOnCanvas);
-                const handleRect: IRect = RectUtil.getRectWithCenterAndSize(pointBetweenPixels, RenderEngineSettings.anchorHoverSize);
-                if (RectUtil.isPointInside(handleRect, data.mousePositionOnViewPortContent)) {
-                    store.dispatch(updateActiveLabelId(labelPoint.id));
+            const LabelFeedback: LabelFeedback = this.getLabelFeedbackUnderMouse(data.mousePositionOnViewPortContent, data);
+            if (!!LabelFeedback) {
+                const FeedbackOnCanvas: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(LabelFeedback.point, data);
+                const FeedbackBetweenPixels = RenderEngineUtil.setFeedbackBetweenPixels(FeedbackOnCanvas);
+                const handleRect: IRect = RectUtil.getRectWithCenterAndSize(FeedbackBetweenPixels, RenderEngineSettings.anchorHoverSize);
+                if (RectUtil.isFeedbackInside(handleRect, data.mousePositionOnViewPortContent)) {
+                    store.dispatch(updateActiveLabelId(LabelFeedback.id));
                     EditorActions.setViewPortActionsDisabledStatus(true);
                     return;
                 } else {
                     store.dispatch(updateActiveLabelId(null));
-                    const pointOnImage: IPoint = RenderEngineUtil.transferPointFromViewPortContentToImage(data.mousePositionOnViewPortContent, data);
-                    this.addPointLabel(pointOnImage);
+                    const FeedbackOnImage: FEEDBACK = RenderEngineUtil.setFeedbackBetweenPixels(data.mousePositionOnViewPortContent);
+                    this.addFeedbackLabel(FeedbackOnImage);
                 }
             } else if (isMouseOverImage) {
-                const pointOnImage: IPoint = RenderEngineUtil.transferPointFromViewPortContentToImage(data.mousePositionOnViewPortContent, data);
-                this.addPointLabel(pointOnImage);
+                const FeedbackOnImage: FEEDBACK = RenderEngineUtil.transferFeedbackFromViewPortContentToImage(data.mousePositionOnViewPortContent, data);
+                this.addFeedbackLabel(FeedbackOnImage);
             }
         }
     }
 
     public mouseUpHandler(data: EditorData): void {
         if (this.isInProgress()) {
-            const activeLabelPoint: LabelPoint = LabelsSelector.getActivePointLabel();
-            const pointSnapped: IPoint = RectUtil.snapPointToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
-            const pointOnImage: IPoint = RenderEngineUtil.transferPointFromViewPortContentToImage(pointSnapped, data);
+            const activeLabelFeedback: LabelFeedback = LabelsSelector.getActiveFeedbackLabel();
+            const FeedbackSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
+            const FeedbackOnImage: FEEDBACK = RenderEngineUtil.transferFeedbackFromViewPortContentToImage(FeedbackSnapped, data);
             const imageData = LabelsSelector.getActiveImageData();
 
-            imageData.labelPoints = imageData.labelPoints.map((labelPoint: LabelPoint) => {
-                if (labelPoint.id === activeLabelPoint.id) {
+            imageData.labelFeedbacks = imageData.labelFeedbacks.map((LabelFeedback: LabelFeedback) => {
+                if (LabelFeedback.id === activeLabelFeedback.id) {
                     return {
-                        ...labelPoint,
-                        point: pointOnImage
+                        ...LabelFeedback,
+                        FEEDBACK: FeedbackOnImage
                     };
                 }
-                return labelPoint;
+                return LabelFeedback;
             });
             store.dispatch(updateImageDataById(imageData.id, imageData));
         }
@@ -91,10 +91,10 @@ export class PointRenderEngine extends BaseRenderEngine {
     public mouseMoveHandler(data: EditorData): void {
         const isOverImage: boolean = RenderEngineUtil.isMouseOverImage(data);
         if (isOverImage) {
-            const labelPoint: LabelPoint = this.getLabelPointUnderMouse(data.mousePositionOnViewPortContent, data);
-            if (!!labelPoint) {
-                if (LabelsSelector.getHighlightedLabelId() !== labelPoint.id) {
-                    store.dispatch(updateHighlightedLabelId(labelPoint.id))
+            const LabelFeedback: LabelFeedback = this.getLabelFeedbackUnderMouse(data.mousePositionOnViewPortContent, data);
+            if (!!LabelFeedback) {
+                if (LabelsSelector.getHighlightedLabelId() !== LabelFeedback.id) {
+                    store.dispatch(updateHighlightedLabelId(LabelFeedback.id))
                 }
             } else {
                 if (LabelsSelector.getHighlightedLabelId() !== null) {
@@ -113,19 +113,19 @@ export class PointRenderEngine extends BaseRenderEngine {
         const highlightedLabelId: string = LabelsSelector.getHighlightedLabelId();
         const imageData: ImageData = LabelsSelector.getActiveImageData();
         if (imageData) {
-            imageData.labelPoints.forEach((labelPoint: LabelPoint) => {
-                if (labelPoint.isVisible) {
-                    if (labelPoint.id === activeLabelId) {
+            imageData.labelFeedbacks.forEach((LabelFeedback: LabelFeedback) => {
+                if (LabelFeedback.isVisible) {
+                    if (LabelFeedback.id === activeLabelId) {
                         if (this.isInProgress()) {
-                            const pointSnapped: IPoint = RectUtil.snapPointToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
-                            const pointBetweenPixels: IPoint = RenderEngineUtil.setPointBetweenPixels(pointSnapped);
+                            const FEEDBACKSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
+                            const FEEDBACKBetweenPixels: FEEDBACK = RenderEngineUtil.setFeedbackBetweenPixels(FEEDBACKSnapped);
                             const anchorColor: string = BaseRenderEngine.resolveLabelAnchorColor(true);
-                            DrawUtil.drawCircleWithFill(this.canvas, pointBetweenPixels, Settings.RESIZE_HANDLE_DIMENSION_PX/2, anchorColor)
+                            DrawUtil.drawCircleWithFill(this.canvas, FEEDBACKBetweenPixels, Settings.RESIZE_HANDLE_DIMENSION_PX/2, anchorColor)
                         } else {
-                            this.renderPoint(labelPoint, true, data);
+                            this.renderFeedback(LabelFeedback, true, data);
                         }
                     } else {
-                        this.renderPoint(labelPoint, labelPoint.id === activeLabelId || labelPoint.id === highlightedLabelId, data);
+                        this.renderFeedback(LabelFeedback, LabelFeedback.id === activeLabelId || LabelFeedback.id === highlightedLabelId, data);
                     }
                 }
             });
@@ -133,21 +133,21 @@ export class PointRenderEngine extends BaseRenderEngine {
         this.updateCursorStyle(data);
     }
 
-    private renderPoint(labelPoint: LabelPoint, isActive: boolean, data: EditorData) {
-        const pointOnImage: IPoint = RenderEngineUtil.transferPointFromImageToViewPortContent(labelPoint.point, data);
-        const pointBetweenPixels = RenderEngineUtil.setPointBetweenPixels(pointOnImage);
+    private renderFeedback(LabelFeedback: LabelFeedback, isActive: boolean, data: EditorData) {
+        const FeedbackOnImage: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(LabelFeedback.point, data);
+        const FeedbackBetweenPixels = RenderEngineUtil.setFeedbackBetweenPixels(FeedbackOnImage);
         const anchorColor: string = BaseRenderEngine.resolveLabelAnchorColor(isActive);
-        DrawUtil.drawCircleWithFill(this.canvas, pointBetweenPixels, Settings.RESIZE_HANDLE_DIMENSION_PX/2, anchorColor)
+        DrawUtil.drawCircleWithFill(this.canvas, FeedbackBetweenPixels, Settings.RESIZE_HANDLE_DIMENSION_PX/2, anchorColor)
     }
 
     private updateCursorStyle(data: EditorData) {
         if (!!this.canvas && !!data.mousePositionOnViewPortContent && !GeneralSelector.getImageDragModeStatus()) {
-            const labelPoint: LabelPoint = this.getLabelPointUnderMouse(data.mousePositionOnViewPortContent, data);
-            if (!!labelPoint && labelPoint.status === LabelStatus.ACCEPTED) {
-                const pointOnCanvas: IPoint = RenderEngineUtil.transferPointFromImageToViewPortContent(labelPoint.point, data);
-                const pointBetweenPixels = RenderEngineUtil.setPointBetweenPixels(pointOnCanvas);
-                const handleRect: IRect = RectUtil.getRectWithCenterAndSize(pointBetweenPixels, RenderEngineSettings.anchorHoverSize);
-                if (RectUtil.isPointInside(handleRect, data.mousePositionOnViewPortContent)) {
+            const LabelFeedback: LabelFeedback = this.getLabelFeedbackUnderMouse(data.mousePositionOnViewPortContent, data);
+            if (!!LabelFeedback && LabelFeedback.status === LabelStatus.ACCEPTED) {
+                const FEEDBACKOnCanvas: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(LabelFeedback.point, data);
+                const FEEDBACKBetweenPixels = RenderEngineUtil.setFeedbackBetweenPixels(FEEDBACKOnCanvas);
+                const handleRect: IRect = RectUtil.getRectWithCenterAndSize(FEEDBACKBetweenPixels, RenderEngineSettings.anchorHoverSize);
+                if (RectUtil.isFeedbackInside(handleRect, data.mousePositionOnViewPortContent)) {
                     store.dispatch(updateCustomCursorStyle(CustomCursorStyle.MOVE));
                     return;
                 }
@@ -156,7 +156,7 @@ export class PointRenderEngine extends BaseRenderEngine {
                 return;
             }
 
-            if (RectUtil.isPointInside({x: 0, y: 0, ...CanvasUtil.getSize(this.canvas)}, data.mousePositionOnViewPortContent)) {
+            if (RectUtil.isFeedbackInside({x: 0, y: 0, ...CanvasUtil.getSize(this.canvas)}, data.mousePositionOnViewPortContent)) {
                 RenderEngineUtil.wrapDefaultCursorStyleInCancel(data);
                 this.canvas.style.cursor = 'none';
             } else {
@@ -173,28 +173,28 @@ export class PointRenderEngine extends BaseRenderEngine {
         return EditorModel.viewPortActionsDisabled;
     }
 
-    private getLabelPointUnderMouse(mousePosition: IPoint, data: EditorData): LabelPoint {
-        const labelPoints: LabelPoint[] = LabelsSelector
+    private getLabelFeedbackUnderMouse(mousePosition: FEEDBACK, data: EditorData): LabelFeedback {
+        const labelFeedbacks: LabelFeedback[] = LabelsSelector
             .getActiveImageData()
-            .labelPoints
-            .filter((labelPoint: LabelPoint) => labelPoint.isVisible);
-        for (const labelPoint of labelPoints) {
-            const pointOnCanvas: IPoint = RenderEngineUtil.transferPointFromImageToViewPortContent(labelPoint.point, data);
-            const handleRect: IRect = RectUtil.getRectWithCenterAndSize(pointOnCanvas, RenderEngineSettings.anchorHoverSize);
-            if (RectUtil.isPointInside(handleRect, mousePosition)) {
-                return labelPoint;
+            .labelFeedbacks
+            .filter((LabelFeedback: LabelFeedback) => LabelFeedback.isVisible);
+        for (const LabelFeedback of labelFeedbacks) {
+            const FEEDBACKOnCanvas: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(LabelFeedback.point, data);
+            const handleRect: IRect = RectUtil.getRectWithCenterAndSize(FEEDBACKOnCanvas, RenderEngineSettings.anchorHoverSize);
+            if (RectUtil.isFeedbackInside(handleRect, mousePosition)) {
+                return LabelFeedback;
             }
         }
         return null;
     }
 
-    private addPointLabel = (point: IPoint) => {
+    private addFeedbackLabel = (FEEDBACK: FEEDBACK) => {
         const activeLabelId = LabelsSelector.getActiveLabelNameId();
         const imageData: ImageData = LabelsSelector.getActiveImageData();
-        const labelPoint: LabelPoint = LabelUtil.createLabelPoint(activeLabelId, point);
-        imageData.labelPoints.push(labelPoint);
+        const LabelFeedback: LabelFeedback = LabelUtil.createLabelFeedback(activeLabelId, FEEDBACK);
+        imageData.labelFeedbacks.push(LabelFeedback);
         store.dispatch(updateImageDataById(imageData.id, imageData));
         store.dispatch(updateFirstLabelCreatedFlag(true));
-        store.dispatch(updateActiveLabelId(labelPoint.id));
+        store.dispatch(updateActiveLabelId(LabelFeedback.id));
     };
 }

@@ -1,9 +1,9 @@
-import {Annotation, LabelName, LabelPoint, LabelPolygon, LabelRect} from '../store/labels/types';
+import {Annotation, LabelName, LabelFeedback, LabelRect} from '../store/labels/types';
 import { v4 as uuidv4 } from 'uuid';
 import {find} from 'lodash';
 import {IRect} from '../interfaces/IRect';
 import {LabelStatus} from '../data/enums/LabelStatus';
-import {IPoint} from '../interfaces/IPoint';
+import {FEEDBACK} from '../interfaces/Feedback';
 import { sample } from 'lodash';
 import {Settings} from '../settings/Settings';
 
@@ -28,16 +28,7 @@ export class LabelUtil {
         }
     }
 
-    public static createLabelPolygon(labelId: string, vertices: IPoint[]): LabelPolygon {
-        return {
-            id: uuidv4(),
-            labelId,
-            vertices,
-            isVisible: true
-        }
-    }
-
-    public static createLabelPoint(labelId: string, point: IPoint): LabelPoint {
+    public static createLabelFeedback(labelId: string, point: FEEDBACK): LabelFeedback {
         return {
             id: uuidv4(),
             labelId,

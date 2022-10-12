@@ -4,9 +4,8 @@ import { AnnotationFormatType } from '../../../data/enums/AnnotationFormatType';
 import { RectLabelsExporter } from '../../../logic/export/RectLabelsExporter';
 import { LabelType } from '../../../data/enums/LabelType';
 import { ILabelFormatData } from '../../../interfaces/ILabelFormatData';
-import { PointLabelsExporter } from '../../../logic/export/PointLabelsExport';
+import { FeedbackLabelsExporter } from '../../../logic/export/FeedbackLabelsExport';
 import { PopupActions } from '../../../logic/actions/PopupActions';
-import { LineLabelsExporter } from '../../../logic/export/LineLabelExport';
 import { TagLabelsExporter } from '../../../logic/export/TagLabelsExport';
 import GenericLabelTypePopup from '../GenericLabelTypePopup/GenericLabelTypePopup';
 import { ExportFormatData } from '../../../data/ExportFormatData';
@@ -27,7 +26,7 @@ const ExportLabelPopup: React.FC<IProps> = ({ activeLabelType }) => {
                 RectLabelsExporter.export(exportFormatType);
                 break;
             case LabelType.FEEDBACK:
-                PointLabelsExporter.export(exportFormatType);
+                FeedbackLabelsExporter.export(exportFormatType);
                 break;
             case LabelType.IMAGE_RECOGNITION:
                 TagLabelsExporter.export(exportFormatType);

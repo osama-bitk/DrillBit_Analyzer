@@ -13,19 +13,11 @@ interface IProps {
 const StateBar: React.FC<IProps> = ({imagesData, activeLabelType}) => {
 
     const pointLabeledImages = imagesData.reduce((currentCount: number, currentImage: ImageData) => {
-        return currentCount + (currentImage.labelPoints.length > 0 ? 1 : 0);
+        return currentCount + (currentImage.labelFeedbacks.length > 0 ? 1 : 0);
     }, 0);
 
     const rectLabeledImages = imagesData.reduce((currentCount: number, currentImage: ImageData) => {
         return currentCount + (currentImage.labelRects.length > 0 ? 1 : 0);
-    }, 0);
-
-    const polygonLabeledImages = imagesData.reduce((currentCount: number, currentImage: ImageData) => {
-        return currentCount + (currentImage.labelPolygons.length > 0 ? 1 : 0);
-    }, 0);
-
-    const lineLabeledImages = imagesData.reduce((currentCount: number, currentImage: ImageData) => {
-        return currentCount + (currentImage.labelLines.length > 0 ? 1 : 0);
     }, 0);
 
     const tagLabeledImages = imagesData.reduce((currentCount: number, currentImage: ImageData) => {

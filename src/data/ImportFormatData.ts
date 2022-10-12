@@ -15,13 +15,7 @@ export const ImportFormatData: ImportFormatDataMap = {
             label: 'Multiple files in YOLO format along with labels names definition - labels.txt file.'
         }
     ],
-    [LabelType.POINT]: [],
-    [LabelType.LINE]: [],
-    [LabelType.POLYGON]: [
-        {
-            type: AnnotationFormatType.COCO,
-            label: 'Single file in COCO JSON format.'
-        }
-    ],
+    [LabelType.FEEDBACK]: [],
+
     [LabelType.IMAGE_RECOGNITION]: []
 }

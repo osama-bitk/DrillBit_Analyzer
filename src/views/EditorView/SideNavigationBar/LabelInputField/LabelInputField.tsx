@@ -4,7 +4,7 @@ import './LabelInputField.scss';
 import classNames from 'classnames';
 import {ImageButton} from '../../../Common/ImageButton/ImageButton';
 import {IRect} from '../../../../interfaces/IRect';
-import {IPoint} from '../../../../interfaces/IPoint';
+import {FEEDBACK} from '../../../../interfaces/Feedback';
 import {RectUtil} from '../../../../utils/RectUtil';
 import {AppState} from '../../../../store';
 import {connect} from 'react-redux';
@@ -79,7 +79,7 @@ class LabelInputField extends React.Component<IProps, IState> {
     };
 
     private closeDropdown = (event: MouseEvent) => {
-        const mousePosition: IPoint = {x: event.clientX, y: event.clientY};
+        const mousePosition: FEEDBACK = {x: event.clientX, y: event.clientY};
         const clientRect = this.dropdown.getBoundingClientRect();
         const dropDownRect: IRect = {
             x: clientRect.left,
@@ -88,7 +88,7 @@ class LabelInputField extends React.Component<IProps, IState> {
             height: clientRect.height
         };
 
-        if (!RectUtil.isPointInside(dropDownRect, mousePosition)) {
+        if (!RectUtil.isFeedbackInside(dropDownRect, mousePosition)) {
             this.setState({isOpen: false});
             window.removeEventListener(EventType.MOUSE_DOWN, this.closeDropdown)
         }

@@ -1,10 +1,10 @@
-import {IPoint} from '../interfaces/IPoint';
+import {FEEDBACK} from '../interfaces/Feedback';
 import {IRect} from '../interfaces/IRect';
 import {ISize} from '../interfaces/ISize';
 
 export interface EditorData {
     viewPortContentSize: ISize,
-    mousePositionOnViewPortContent: IPoint,
+    mousePositionOnViewPortContent: FEEDBACK,
     activeKeyCombo: string[],
     event?: Event
     zoom: number,
@@ -12,5 +12,5 @@ export interface EditorData {
     defaultRenderImageRect: IRect,
     realImageSize: ISize,
     viewPortContentImageRect: IRect,
-    absoluteViewPortContentScrollPosition: IPoint
+    absoluteViewPortContentScrollPosition: FEEDBACK
 }

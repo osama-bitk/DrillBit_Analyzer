@@ -10,9 +10,7 @@ export class ImageDataUtil {
             fileData,
             loadStatus: false,
             labelRects: [],
-            labelPoints: [],
-            labelLines: [],
-            labelPolygons: [],
+            labelFeedbacks: [],
             labelNameIds: [],
             isVisitedByObjectDetector: false,
             isVisitedByPoseDetector: false
@@ -23,9 +21,7 @@ export class ImageDataUtil {
         return {
             ...item,
             labelRects: [],
-            labelPoints: [],
-            labelLines: [],
-            labelPolygons: [],
+            labelFeedbacks: [],
             labelNameIds: []
         }
     }

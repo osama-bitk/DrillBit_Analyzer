@@ -3,9 +3,9 @@ import './LabelControlPanel.scss';
 import {updatePreventCustomCursorStatus} from "../../../store/general/actionCreators";
 import {AppState} from "../../../store";
 import {connect} from "react-redux";
-import {IPoint} from "../../../interfaces/IPoint";
+import {FEEDBACK} from "../../../interfaces/Feedback";
 import classNames from "classnames";
-import {LabelName, LabelPoint, LabelRect} from "../../../store/labels/types";
+import {LabelName, LabelFeedback, LabelRect} from "../../../store/labels/types";
 import {ImageButton} from "../../Common/ImageButton/ImageButton";
 import {LabelActions} from "../../../logic/actions/LabelActions";
 import {ImageData} from "../../../store/labels/types";
@@ -15,11 +15,11 @@ import {findLast} from "lodash";
 import {LabelsSelector} from "../../../store/selectors/LabelsSelector";
 
 interface IProps {
-    position: IPoint;
+    position: FEEDBACK;
     updatePreventCustomCursorStatus: (preventCustomCursor: boolean) => any;
     activeLabelId: string;
     highlightedLabelId: string;
-    labelData: LabelRect | LabelPoint;
+    labelData: LabelRect | LabelFeedback;
     imageData: ImageData;
     updateImageDataById: (id: string, newImageData: ImageData) => any;
 }
@@ -52,16 +52,16 @@ const LabelControlPanel: React.FC<IProps> = ({position, updatePreventCustomCurso
                     return labelRect
                 }
             }),
-            labelPoints: imageData.labelPoints.map((labelPoint: LabelPoint) => {
-                if (labelPoint.id === labelData.id) {
-                    const labelName: LabelName = findLast(LabelsSelector.getLabelNames(), {name: labelPoint.suggestedLabel});
+            labelPoints: imageData.labelFeedbacks.map((labelFeedback: LabelFeedback) => {
+                if (labelFeedback.id === labelData.id) {
+                    const labelName: LabelName = findLast(LabelsSelector.getLabelNames(), {name: labelFeedback.suggestedLabel});
                     return {
-                        ...labelPoint,
+                        ...labelFeedback,
                         status: LabelStatus.ACCEPTED,
-                        labelId: !!labelName ? labelName.id : labelPoint.labelId
+                        labelId: !!labelName ? labelName.id : labelFeedback.labelId
                     }
                 } else {
-                    return labelPoint
+                    return labelFeedback
                 }
             })
         };

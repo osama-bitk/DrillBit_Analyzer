@@ -1,5 +1,5 @@
 import {ILine} from '../../interfaces/ILine';
-import {IPoint} from '../../interfaces/IPoint';
+import {IPoint} from '../../interfaces/Feedback';
 import {RenderEngineUtil} from '../RenderEngineUtil';
 
 describe('RenderEngineUtil.isMouseOverLine tests', () => {

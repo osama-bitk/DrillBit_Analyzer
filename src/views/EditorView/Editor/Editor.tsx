@@ -1,7 +1,7 @@
 import React from 'react';
 import './Editor.scss';
 import {ISize} from '../../../interfaces/ISize';
-import {ImageData, LabelPoint, LabelRect} from '../../../store/labels/types';
+import {ImageData, LabelFeedback, LabelRect} from '../../../store/labels/types';
 import {FileUtil} from '../../../utils/FileUtil';
 import {AppState} from '../../../store';
 import {connect} from 'react-redux';
@@ -23,7 +23,7 @@ import Scrollbars from 'react-custom-scrollbars-2';
 import {ViewPortActions} from '../../../logic/actions/ViewPortActions';
 import {PlatformModel} from '../../../staticModels/PlatformModel';
 import LabelControlPanel from '../LabelControlPanel/LabelControlPanel';
-import {IPoint} from '../../../interfaces/IPoint';
+import {FEEDBACK} from '../../../interfaces/Feedback';
 import {RenderEngineUtil} from '../../../utils/RenderEngineUtil';
 import {LabelStatus} from '../../../data/enums/LabelStatus';
 import {isEqual} from 'lodash';
@@ -185,8 +185,8 @@ class Editor extends React.Component<IProps, IState> {
             return this.props.imageData.labelRects
                 .filter((labelRect: LabelRect) => labelRect.isCreatedByAI && labelRect.status !== LabelStatus.ACCEPTED)
                 .map((labelRect: LabelRect) => {
-                    const positionOnImage: IPoint = {x: labelRect.rect.x, y: labelRect.rect.y};
-                    const positionOnViewPort: IPoint = RenderEngineUtil.transferPointFromImageToViewPortContent(positionOnImage, editorData);
+                    const positionOnImage: FEEDBACK = {x: labelRect.rect.x, y: labelRect.rect.y};
+                    const positionOnViewPort: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(positionOnImage, editorData);
                     return <LabelControlPanel
                         position={positionOnViewPort}
                         labelData={labelRect}
@@ -195,17 +195,17 @@ class Editor extends React.Component<IProps, IState> {
                     />
                 })
         }
-        else if (this.props.activeLabelType === LabelType.POINT) {
-            return this.props.imageData.labelPoints
-                .filter((labelPoint: LabelPoint) => labelPoint.isCreatedByAI && labelPoint.status !== LabelStatus.ACCEPTED)
-                .map((labelPoint: LabelPoint) => {
-                    const positionOnImage: IPoint = {x: labelPoint.point.x, y: labelPoint.point.y};
-                    const positionOnViewPort: IPoint = RenderEngineUtil.transferPointFromImageToViewPortContent(positionOnImage, editorData);
+        else if (this.props.activeLabelType === LabelType.FEEDBACK) {
+            return this.props.imageData.labelFeedbacks
+                .filter((LabelFeedback: LabelFeedback) => LabelFeedback.isCreatedByAI && LabelFeedback.status !== LabelStatus.ACCEPTED)
+                .map((LabelFeedback: LabelFeedback) => {
+                    const positionOnImage: FEEDBACK = {x: LabelFeedback.point.x, y: LabelFeedback.point.y};
+                    const positionOnViewPort: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(positionOnImage, editorData);
                     return <LabelControlPanel
                         position={positionOnViewPort}
-                        labelData={labelPoint}
+                        labelData={LabelFeedback}
                         imageData={this.props.imageData}
-                        key={labelPoint.id}
+                        key={LabelFeedback.id}
                     />
                 })
         }

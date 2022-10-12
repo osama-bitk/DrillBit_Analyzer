@@ -1,8 +1,8 @@
 import {Direction} from "../data/enums/Direction";
-import {IPoint} from "../interfaces/IPoint";
+import {FEEDBACK} from "../interfaces/Feedback";
 
 export class DirectionUtil {
-    public static convertDirectionToVector(direction: Direction): IPoint {
+    public static convertDirectionToVector(direction: Direction): FEEDBACK {
         switch (direction) {
             case Direction.RIGHT:
                 return {x: 1, y: 0};

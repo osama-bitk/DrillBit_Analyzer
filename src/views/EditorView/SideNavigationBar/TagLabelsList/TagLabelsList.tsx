@@ -34,7 +34,7 @@ const TagLabelsList: React.FC<IProps> = (
     };
     const listStyleContent: React.CSSProperties = {
         width: size.width,
-        height: imageData.labelPolygons.length * labelInputFieldHeight
+        ///height: imageData.labelPolygons.length * labelInputFieldHeight
     };
 
     const onTagClick = (labelId: string)  => {

@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {LabelType} from "../../../../data/enums/LabelType";
 import {ISize} from "../../../../interfaces/ISize";
 import {AppState} from "../../../../store";
-import {ImageData, LabelPoint, LabelRect} from "../../../../store/labels/types";
+import {ImageData, LabelFeedback, LabelRect} from "../../../../store/labels/types";
 import {VirtualList} from "../../../Common/VirtualList/VirtualList";
 import ImagePreview from "../ImagePreview/ImagePreview";
 import './ImagesList.scss';
@@ -59,16 +59,12 @@ class ImagesList extends React.Component<IProps, IState> {
     private isImageChecked = (index:number): boolean => {
         const imageData = this.props.imagesData[index]
         switch (this.props.activeLabelType) {
-            case LabelType.LINE:
-                return imageData.labelLines.length > 0
             case LabelType.IMAGE_RECOGNITION:
                 return imageData.labelNameIds.length > 0
-            case LabelType.POINT:
-                return imageData.labelPoints
-                    .filter((labelPoint: LabelPoint) => labelPoint.status === LabelStatus.ACCEPTED)
+            case LabelType.FEEDBACK:
+                return imageData.labelFeedbacks
+                    .filter((labelPoint: LabelFeedback) => labelPoint.status === LabelStatus.ACCEPTED)
                     .length > 0
-            case LabelType.POLYGON:
-                return imageData.labelPolygons.length > 0
             case LabelType.RECT:
                 return imageData.labelRects
                     .filter((labelRect: LabelRect) => labelRect.status === LabelStatus.ACCEPTED)

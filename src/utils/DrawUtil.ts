@@ -1,5 +1,5 @@
 
-import {IPoint} from '../interfaces/IPoint';
+import {FEEDBACK} from '../interfaces/Feedback';
 import {IRect} from '../interfaces/IRect';
 import {UnitUtil} from './UnitUtil';
 
@@ -10,7 +10,7 @@ export class DrawUtil {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    public static drawLine(canvas:HTMLCanvasElement, startPoint:IPoint, endPoint:IPoint, color = '#111111', thickness = 1): void {
+    public static drawLine(canvas:HTMLCanvasElement, startPoint:FEEDBACK, endPoint:FEEDBACK, color = '#111111', thickness = 1): void {
         const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
         ctx.save();
         ctx.strokeStyle = color;
@@ -54,7 +54,7 @@ export class DrawUtil {
         ctx.restore();
     }
 
-    public static drawCircleWithFill(canvas:HTMLCanvasElement, anchorPoint:IPoint, radius:number, color = '#ffffff'):void {
+    public static drawCircleWithFill(canvas:HTMLCanvasElement, anchorPoint:FEEDBACK, radius:number, color = '#ffffff'):void {
         const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
         ctx.save();
         const startAngleRad = UnitUtil.deg2rad(0);
@@ -66,7 +66,7 @@ export class DrawUtil {
         ctx.restore();
     }
 
-    public static drawCircle(canvas:HTMLCanvasElement, anchorPoint:IPoint, radius:number, startAngleDeg:number, endAngleDeg:number, thickness = 20, color = '#ffffff'): void {
+    public static drawCircle(canvas:HTMLCanvasElement, anchorPoint:FEEDBACK, radius:number, startAngleDeg:number, endAngleDeg:number, thickness = 20, color = '#ffffff'): void {
         const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
         const startAngleRad = UnitUtil.deg2rad(startAngleDeg);
         const endAngleRad = UnitUtil.deg2rad(endAngleDeg);
@@ -79,7 +79,7 @@ export class DrawUtil {
         ctx.restore();
     }
 
-    public static drawPolygon(canvas:HTMLCanvasElement, anchors: IPoint[], color = '#fff', thickness = 1): void {
+    public static drawPolygon(canvas:HTMLCanvasElement, anchors: FEEDBACK[], color = '#fff', thickness = 1): void {
         const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
         ctx.save();
         ctx.strokeStyle = color;
@@ -94,7 +94,7 @@ export class DrawUtil {
         ctx.restore();
     }
 
-    public static drawPolygonWithFill(canvas:HTMLCanvasElement, anchors: IPoint[], color = '#fff'): void {
+    public static drawPolygonWithFill(canvas:HTMLCanvasElement, anchors: FEEDBACK[], color = '#fff'): void {
         const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
         ctx.save();
         ctx.fillStyle = color;
@@ -108,7 +108,7 @@ export class DrawUtil {
         ctx.restore();
     }
 
-    public static drawText(canvas:HTMLCanvasElement, text:string, textSize:number, anchorPoint:IPoint, color = '#ffffff', bold = false, align = 'center'):void {
+    public static drawText(canvas:HTMLCanvasElement, text:string, textSize:number, anchorPoint:FEEDBACK, color = '#ffffff', bold = false, align = 'center'):void {
         const ctx:CanvasRenderingContext2D = canvas.getContext('2d');
         ctx.save();
         ctx.fillStyle = color;

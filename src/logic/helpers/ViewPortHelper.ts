@@ -5,13 +5,13 @@ import {store} from "../../index";
 import {updateCustomCursorStyle} from "../../store/general/actionCreators";
 import {CustomCursorStyle} from "../../data/enums/CustomCursorStyle";
 import {EditorModel} from "../../staticModels/EditorModel";
-import {IPoint} from "../../interfaces/IPoint";
-import {PointUtil} from "../../utils/PointUtil";
+import {FEEDBACK} from "../../interfaces/Feedback";
+import {FeedbackUtil} from "../../utils/FeedbackUtil";
 import {ViewPortActions} from "../actions/ViewPortActions";
 
 export class ViewPortHelper {
-    private startScrollPosition: IPoint;
-    private mouseStartPosition: IPoint;
+    private startScrollPosition: FEEDBACK;
+    private mouseStartPosition: FEEDBACK;
 
     public update(data: EditorData): void {
         if (!!data.event) {
@@ -50,9 +50,9 @@ export class ViewPortHelper {
     private mouseMoveHandler(data: EditorData) {
         if (!!this.startScrollPosition && !!this.mouseStartPosition) {
             const event = data.event as MouseEvent;
-            const currentMousePosition: IPoint = {x: event.screenX, y: event.screenY};
-            const mousePositionDelta: IPoint = PointUtil.subtract(currentMousePosition, this.mouseStartPosition);
-            const nextScrollPosition = PointUtil.subtract(this.startScrollPosition, mousePositionDelta);
+            const currentMousePosition: FEEDBACK = {x: event.screenX, y: event.screenY};
+            const mousePositionDelta: FEEDBACK = FeedbackUtil.subtract(currentMousePosition, this.mouseStartPosition);
+            const nextScrollPosition = FeedbackUtil.subtract(this.startScrollPosition, mousePositionDelta);
             ViewPortActions.setScrollPosition(nextScrollPosition);
             store.dispatch(updateCustomCursorStyle(CustomCursorStyle.GRABBING));
         } else {

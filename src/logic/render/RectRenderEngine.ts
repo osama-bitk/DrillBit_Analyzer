@@ -71,7 +71,7 @@ export class RectRenderEngine extends BaseRenderEngine {
         if (!!data.viewPortContentImageRect) {
             const mousePositionSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
             const activeLabelRect: LabelRect = LabelsSelector.getActiveRectLabel();
-
+            
             if (!!this.startCreateRectPoint && !FeedbackUtil.equals(this.startCreateRectPoint, mousePositionSnapped)) {
 
                 const minX: number = Math.min(this.startCreateRectPoint.x, mousePositionSnapped.x);
@@ -136,6 +136,7 @@ export class RectRenderEngine extends BaseRenderEngine {
         if (imageData) {
             imageData.labelRects.forEach((labelRect: LabelRect) => {
                 if (labelRect.isVisible) {
+                    console.log(labelRect.labelId)
                     if (labelRect.status === LabelStatus.ACCEPTED && labelRect.id === activeLabelId) {
                         this.drawActiveRect(labelRect, data)
                     } else {
@@ -232,7 +233,7 @@ export class RectRenderEngine extends BaseRenderEngine {
         const scale: number = RenderEngineUtil.calculateImageScale(data);
         return RectUtil.scaleRect(rect, 1/scale);
     }
-
+    
     private addRectLabel = (rect: IRect) => {
         const activeLabelId = LabelsSelector.getActiveLabelNameId();
         const imageData: ImageData = LabelsSelector.getActiveImageData();

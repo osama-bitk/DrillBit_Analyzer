@@ -74,6 +74,13 @@ export class COCOImporter extends AnnotationImporter {
                 ))
             }
 
+            if (this.labelType.includes(LabelType.FEEDBACK)) {
+                imageDataMap[annotation.image_id].labelRects.push(LabelUtil.createLabelRect(
+                    labelNameMap[annotation.category_id].id,
+                    COCOUtils.bbox2rect(annotation.bbox)
+                ))
+            }
+
             if (this.labelType.includes(LabelType.POLYGON)) {
                 const polygons = COCOUtils.segmentation2vertices(annotation.segmentation);
                 for (const polygon of polygons) {

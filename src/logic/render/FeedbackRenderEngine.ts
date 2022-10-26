@@ -10,7 +10,6 @@ import {
     updateHighlightedLabelId,
     updateImageDataById
 } from '../../store/labels/actionCreators';
-import {FeedbackUtil} from '../../utils/FeedbackUtil';
 import {RectUtil} from '../../utils/RectUtil';
 import {DrawUtil} from '../../utils/DrawUtil';
 import {updateCustomCursorStyle} from '../../store/general/actionCreators';
@@ -26,15 +25,13 @@ import {GeneralSelector} from '../../store/selectors/GeneralSelector';
 import {LabelStatus} from '../../data/enums/LabelStatus';
 import {Settings} from '../../settings/Settings';
 import {LabelUtil} from '../../utils/LabelUtil';
-import {RectAnchor} from '../../data/RectAnchor';
 
 export class FeedbackRenderEngine extends BaseRenderEngine {
 
     // =================================================================================================================
     // STATE
     // =================================================================================================================
-    private startCreateRectPoint: FEEDBACK;
-    private startResizeRectAnchor: RectAnchor;
+    
     public constructor(canvas: HTMLCanvasElement) {
         super(canvas);
         this.labelType = LabelType.FEEDBACK;
@@ -45,8 +42,6 @@ export class FeedbackRenderEngine extends BaseRenderEngine {
     // =================================================================================================================
 
     public mouseDownHandler(data: EditorData): void {
-        // console.log(LabelFeedback.labelid)
-
         const isMouseOverImage: boolean = RenderEngineUtil.isMouseOverImage(data);
         const isMouseOverCanvas: boolean = RenderEngineUtil.isMouseOverCanvas(data);
         
@@ -56,18 +51,6 @@ export class FeedbackRenderEngine extends BaseRenderEngine {
                 const FeedbackOnCanvas: FEEDBACK = RenderEngineUtil.transferFeedbackFromImageToViewPortContent(LabelFeedback.point, data);
                 const FeedbackBetweenPixels = RenderEngineUtil.setFeedbackBetweenPixels(FeedbackOnCanvas);
                 const handleRect: IRect = RectUtil.getRectWithCenterAndSize(FeedbackBetweenPixels, RenderEngineSettings.anchorHoverSize);
-                const anchorUnderMouse: RectAnchor = this.getAnchorUnderMouseByRect(handleRect, data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
-            if (!!anchorUnderMouse && LabelFeedback.status === LabelStatus.ACCEPTED) {
-                    store.dispatch(updateActiveLabelId(LabelFeedback.id));
-                    this.startRectResize(anchorUnderMouse);
-                } else {
-                    if (!!LabelsSelector.getHighlightedLabelId())
-                        store.dispatch(updateActiveLabelId(LabelsSelector.getHighlightedLabelId()));
-                    else
-                        this.startRectCreation(data.mousePositionOnViewPortContent);
-                }
-
-
                 if (RectUtil.isFeedbackInside(handleRect, data.mousePositionOnViewPortContent)) {
                     store.dispatch(updateActiveLabelId(LabelFeedback.id));
                     EditorActions.setViewPortActionsDisabledStatus(true);
@@ -81,26 +64,14 @@ export class FeedbackRenderEngine extends BaseRenderEngine {
                 const FeedbackOnImage: FEEDBACK = RenderEngineUtil.transferFeedbackFromViewPortContentToImage(data.mousePositionOnViewPortContent, data);
                 this.addFeedbackLabel(FeedbackOnImage);
             }
-        }
-        
+        }  
     }
 
     public mouseUpHandler(data: EditorData): void {
         if (this.isInProgress()) {
-            const mousePositionSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
             const activeLabelFeedback: LabelFeedback = LabelsSelector.getActiveFeedbackLabel();
             const FeedbackSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
             const FeedbackOnImage: FEEDBACK = RenderEngineUtil.transferFeedbackFromViewPortContentToImage(FeedbackSnapped, data);
-            if (!!this.startCreateRectPoint && !FeedbackUtil.equals(this.startCreateRectPoint, mousePositionSnapped)) {
-
-                const minX: number = Math.min(this.startCreateRectPoint.x, mousePositionSnapped.x);
-                const minY: number = Math.min(this.startCreateRectPoint.y, mousePositionSnapped.y);
-                const maxX: number = Math.max(this.startCreateRectPoint.x, mousePositionSnapped.x);
-                const maxY: number = Math.max(this.startCreateRectPoint.y, mousePositionSnapped.y);
-
-                const rect = {x: minX, y: minY, width: maxX - minX, height: maxY - minY};
-                this.addFeedbackLabel(RenderEngineUtil.transferRectFromImageToViewPortContent(rect, data));
-            }
             const imageData = LabelsSelector.getActiveImageData();
 
             imageData.labelFeedbacks = imageData.labelFeedbacks.map((LabelFeedback: LabelFeedback) => {
@@ -145,7 +116,6 @@ export class FeedbackRenderEngine extends BaseRenderEngine {
             imageData.labelFeedbacks.forEach((LabelFeedback: LabelFeedback) => {
                 if (LabelFeedback.isVisible) {
                     if (LabelFeedback.id === activeLabelId) {
-                        console.log(LabelFeedback.labelId)
                         if (this.isInProgress()) {
                             const FEEDBACKSnapped: FEEDBACK = RectUtil.snapFeedbackToRect(data.mousePositionOnViewPortContent, data.viewPortContentImageRect);
                             const FEEDBACKBetweenPixels: FEEDBACK = RenderEngineUtil.setFeedbackBetweenPixels(FEEDBACKSnapped);
@@ -161,17 +131,6 @@ export class FeedbackRenderEngine extends BaseRenderEngine {
             });
         }
         this.updateCursorStyle(data);
-    }
-
-    private getAnchorUnderMouseByRect(rect: IRect, mousePosition: FEEDBACK, imageRect: IRect): RectAnchor {
-        const rectAnchors: RectAnchor[] = RectUtil.mapRectToAnchors(rect);
-        for (let i = 0; i < rectAnchors.length; i++) {
-            const anchorRect: IRect = RectUtil.translate(RectUtil.getRectWithCenterAndSize(rectAnchors[i].position, RenderEngineSettings.anchorHoverSize), imageRect);
-            if (!!mousePosition && RectUtil.isFeedbackInside(anchorRect, mousePosition)) {
-                return rectAnchors[i];
-            }
-        }
-        return null;
     }
 
     private renderFeedback(LabelFeedback: LabelFeedback, isActive: boolean, data: EditorData) {
@@ -238,24 +197,4 @@ export class FeedbackRenderEngine extends BaseRenderEngine {
         store.dispatch(updateFirstLabelCreatedFlag(true));
         store.dispatch(updateActiveLabelId(LabelFeedback.id));
     };
-
-
-    private startRectCreation(mousePosition: FEEDBACK) {
-        this.startCreateRectPoint = mousePosition;
-        store.dispatch(updateActiveLabelId(null));
-        EditorActions.setViewPortActionsDisabledStatus(true);
-    }
-
-    private startRectResize(activatedAnchor: RectAnchor) {
-        this.startResizeRectAnchor = activatedAnchor;
-        EditorActions.setViewPortActionsDisabledStatus(true);
-    }
-
-    private endRectTransformation() {
-        this.startCreateRectPoint = null;
-        this.startResizeRectAnchor = null;
-        EditorActions.setViewPortActionsDisabledStatus(false);
-    }
-
-
 }

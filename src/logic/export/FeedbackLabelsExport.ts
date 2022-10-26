@@ -4,6 +4,7 @@ import {ImageRepository} from "../imageRepository/ImageRepository";
 import {LabelsSelector} from "../../store/selectors/LabelsSelector";
 import {ExporterUtil} from "../../utils/ExporterUtil";
 import {findLast} from "lodash";
+import { Settings } from "../../settings/Settings";
 
 export class FeedbackLabelsExporter {
     public static export(exportFormatType: AnnotationFormatType): void {
@@ -17,14 +18,21 @@ export class FeedbackLabelsExporter {
     }
 
     private static exportAsCSV(): void {
-        const content: string = LabelsSelector.getImagesData()
+        try {
+        const content: string[] = LabelsSelector.getImagesData()
             .map((imageData: ImageData) => {
                 return FeedbackLabelsExporter.wrapRectLabelsIntoCSV(imageData)})
             .filter((imageLabelData: string) => {
                 return !!imageLabelData})
-            .join("\n");
+            ;
+            content.unshift(Settings.RECT_LABELS_EXPORT_CSV_COLUMN_NAMES)
+        const contentjoinn: string = content.join('\n');
         const fileName: string = `${ExporterUtil.getExportFileName()}.csv`;
-        ExporterUtil.saveAs(content, fileName);
+        ExporterUtil.saveAs(contentjoinn, fileName);
+        } catch (error) {
+            // TODO
+            throw new Error(error as string);
+        }
     }
 
     private static wrapRectLabelsIntoCSV(imageData: ImageData): string {

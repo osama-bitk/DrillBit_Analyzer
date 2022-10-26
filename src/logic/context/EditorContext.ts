@@ -30,7 +30,7 @@ export class EditorContext extends BaseContext {
                 if (EditorModel.supportRenderingEngine) {
                     switch (EditorModel.supportRenderingEngine.labelType) {
                         case LabelType.FEEDBACK:
-                            //(EditorModel.supportRenderingEngine as FeedbackRenderEngine).cancelLabelCreation();
+                            //(EditorModel.supportRenderingEngine as ).cancelLabelCreation();
                             break;
                         case LabelType.RECT:
                             //(EditorModel.supportRenderingEngine as RectRenderEngine).cancelLabelCreation();

@@ -49,7 +49,7 @@ const PointLabelsList: React.FC<IProps> = (
         height: imageData.labelFeedbacks.length * labelInputFieldHeight
     };
 
-    const deletePointLabelById = (labelFeedbackId: string) => {
+    const deleteFeedbackLabelById = (labelFeedbackId: string) => {
         LabelActions.deleteFeedbackLabelById(imageData.id, labelFeedbackId);
     };
 
@@ -76,6 +76,7 @@ const PointLabelsList: React.FC<IProps> = (
 
     const onClickHandler = () => {
         updateActiveLabelIdAction(null);
+        // console.log(LabelFeedback.id)
     };
 
     const getChildren = () => {
@@ -92,7 +93,7 @@ const PointLabelsList: React.FC<IProps> = (
                 isVisible={labelFeedback.isVisible}
                 id={labelFeedback.id}
                 key={labelFeedback.id}
-                onDelete={deletePointLabelById}
+                onDelete={deleteFeedbackLabelById}
                 value={labelFeedback.labelId !== null ? findLast(labelNames, {id: labelFeedback.labelId}) : null}
                 options={labelNames}
                 onSelectLabel={updatePointLabel}

@@ -17,6 +17,7 @@ import {ImageUtil} from "../../utils/ImageUtil";
 import {GeneralSelector} from "../../store/selectors/GeneralSelector";
 import {ViewPortHelper} from "../helpers/ViewPortHelper";
 import {CustomCursorStyle} from "../../data/enums/CustomCursorStyle";
+import{FeedbackRenderEngine} from "../render/FeedbackRenderEngine"
 export class EditorActions {
 
     // =================================================================================================================
@@ -27,6 +28,9 @@ export class EditorActions {
         switch (activeLabelType) {
             case LabelType.RECT:
                 EditorModel.supportRenderingEngine = new RectRenderEngine(EditorModel.canvas);
+                break;
+            case LabelType.FEEDBACK:
+                EditorModel.supportRenderingEngine = new FeedbackRenderEngine(EditorModel.canvas);
                 break;
             default:
                 EditorModel.supportRenderingEngine = null;
